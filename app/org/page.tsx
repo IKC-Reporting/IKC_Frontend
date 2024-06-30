@@ -1,14 +1,12 @@
 "use client";
 
-const Organization = () => {
+const SelectOrganization = () => {
   return (
-    <div>
-        <p>Organization page</p>
-        <a href="/project_home">Project Home</a>
-        <br />
-        <a href="/org_home">Organization Home</a>
+    <div className="container">
+      <p>Select Organization</p>
+      <button className="button" onClick={() => window.location.href = "/org_home"}>Place Holder Org</button>
     </div>
-  )
-}
+  );
+};
 
-export default Organization
+export default SelectOrganization;
