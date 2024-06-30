@@ -8,11 +8,10 @@ const Project_Options = () => {
       </div>
       <div>
         <h1>Project Options</h1>
-        <a href="/add_contribution">Add A Contribution</a>
-        <br />
-        <a href="/my_contributions">View Your Contributions</a>
-        <br />
-        <a href="/project_home">Project Page</a>
+        <a href="/add_contribution"><button type="button">Add A Contribution</button></a>
+        <br/><br/>
+        <a href="/my_contributions"><button type="button">View Your Contributions</button></a>
+        <br/>
       </div>
     </div>
   )
