@@ -1,23 +1,24 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import './globals.css';
+import ApolloClientProvider from './apollo-client';
+import { ReactNode } from "react";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "IKC - In-Kind Contribution Reporting",
-  description:
-    "Webapp for submission of Inkind contributions for research projects",
+export const metadata = {
+  title: 'IKC - In-Kind Contribution Reporting',
+  description: 'Webapp for submission of Inkind contributions for research projects',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+interface RootLayoutProps {
+  children: ReactNode;
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en_CA">
-      <body className={inter.className}>{children}</body>
+    <html lang="en">
+      <body>
+        <ApolloClientProvider>
+          {children}
+        </ApolloClientProvider>
+      </body>
     </html>
   );
 }
