@@ -8,9 +8,9 @@ const Submit_Contribution = () => {
       </div>
       <div>
         <p>Submit Contribution</p>
-        <a href="/add_item">Add A Item</a>
-        <br />
-        <a href="/add_service">Add A Service</a>
+        <a href="/add_item"><button type="button">Add A Item</button></a>
+        <br/><br/>
+        <a href="/add_service"><button type="button">Add A Service</button></a>
         </div>
     </div>
   )
