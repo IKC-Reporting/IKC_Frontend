@@ -3,9 +3,10 @@ import React from 'react'
 const Submissions = () => {
   return (
     <div>
-    <p>Submisstions Page</p>
-    <a href="/org_options">Organization Options</a>
-    </div>
+      <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/org_options">Organization Options</a></p>
+
+      <p>Submisstions Page</p>
+     </div>
   )
 }
 

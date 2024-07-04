@@ -9,6 +9,7 @@ const fakeContributions = [
 const my_contributions = () => {
   return (
     <div>
+      <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/org_options">Organization Options</a></p>
       <h1>All Contributions</h1>
       <div>
         <table style={{border: "2px solid forestgreen", width: "800px", height: "200px"}}>

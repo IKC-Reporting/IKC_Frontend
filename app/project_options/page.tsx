@@ -4,7 +4,7 @@ const Project_Options = () => {
   return (
     <div>
       <div>
-        <p><a href="/org">Organizations</a> {"<"} <a href="/project_home">Project Home</a></p>
+        <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/project_home">Project Home</a></p>
       </div>
       <div>
         <h1>Project Options</h1>
