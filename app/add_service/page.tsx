@@ -1,5 +1,14 @@
 "use client";
-import React from 'react'
+import React, {useState} from 'react'
+
+function getDate()
+{
+  const today = new Date();
+  const month = today.getMonth()+1;
+  const year = today.getFullYear();
+  const date = today.getDate();
+  return `${month}/${date}/${year}`;
+}
 
 const Add_Service = () => {
   return (
