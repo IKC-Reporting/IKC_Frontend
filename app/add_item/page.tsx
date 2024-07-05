@@ -36,7 +36,7 @@ const Add_Item = () => {
           <br/>
           <div>
           <label>Value per piece(CAD): 
-            <input required type="number" min="0"/>
+            <input required type="number" min="0" step="0.01"/>
           </label>
           </div>
           <br/>

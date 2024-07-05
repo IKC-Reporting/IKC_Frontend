@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 
 const Add_Service = () => {
@@ -17,7 +18,7 @@ const Add_Service = () => {
           <br/>
           <div>
             <label>Number of Hours(to the closest 0.25hrs): 
-              <input required type="number" min="1"/>
+              <input required type="number" min="0.25" step="0.25"/>
             </label>
           </div>
           <br/>
