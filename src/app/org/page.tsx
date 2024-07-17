@@ -2,7 +2,7 @@
 
 const Organization = () => {
   return (
-    <div>org home page</div>
+    <h1>org home page</h1>
   )
 }
 
