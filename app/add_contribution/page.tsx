@@ -7,7 +7,7 @@ const Submit_Contribution = () => {
       <div>
         <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/project_home">Project Home</a> {"<"} <a href="/project_options">Project Options</a></p>
       </div>
-      <div className="container">
+      <div className='container'>
         <h1>Submit Contribution</h1>
         <a href="/add_item"><button className="button">Add A Item</button></a>
         <br/><br/>

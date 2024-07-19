@@ -1,7 +1,11 @@
 "use client";
-import React from 'react'
+import { gql, useQuery } from "@apollo/client";
+import { useEffect } from "react";
+import Layout from "../components/Layout";
 
 const Project_Home = () => {
+
+
   return (
     <div>
       <div>
@@ -13,6 +17,10 @@ const Project_Home = () => {
         <button className="button">Project A</button>
         </a>
       </div>
+      
+      <a href="/project_options">
+        <button className="button">Project A</button>
+      </a>
       <br />
     </div>
   )

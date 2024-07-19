@@ -23,30 +23,34 @@ const Add_Item = () => {
         <h1>Contribute An Item</h1>
         <form action='/thanks_page'>
           <div>
-            <label>Item: 
+            <label>Item:
+              <br/>
               <input required type="text"/>
             </label>
           </div>
           <br/>
           <div>
-            <label>Quantity: 
+            <label>Quantity:
+              <br/>
               <input required type="number" min="1"/>
             </label>
           </div>
           <br/>
           <div>
-          <label>Value per piece(CAD): 
-            <input required type="number" min="0" step="0.01"/>
+          <label>Value per piece(CAD):
+            <br/>
+            <input required type="number" min="0"/>
           </label>
           </div>
           <br/>
           <div>
             <label>Description(optional): 
+              <br/>
               <input type="text"/>
             </label>
           </div>
           <br/><br/>
-          <input type="Submit"></input>
+          <input className="button" type="Submit"></input>
         </form>
       </div>
     </div>

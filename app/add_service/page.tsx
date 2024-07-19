@@ -11,6 +11,9 @@ function getDate()
 }
 
 const Add_Service = () => {
+
+  const [currentDate] = useState(getDate());
+
   return (
     <div>
       <div>
@@ -20,24 +23,27 @@ const Add_Service = () => {
         <h1>Contribute A Service</h1>
         <form action='/thanks_page'>
           <div>
-            <label>Service: 
+            <label>Service:
+              <br/>
               <input required type="text"/>
             </label>
           </div>
           <br/>
           <div>
-            <label>Number of Hours(to the closest 0.25hrs): 
-              <input required type="number" min="0.25" step="0.25"/>
+            <label>Number of Hours(to the closest 0.25hrs):
+              <br/>
+              <input required type="number" min="1"/>
             </label>
           </div>
           <br/>
           <div>
-            <label>Description(optional): 
+            <label>Description(optional):
+              <br/>
               <input type="text"/>
             </label>
           </div>
           <br/><br/>
-          <input type="Submit"></input>
+          <input className="button" type="Submit"></input>
         </form>
       </div>
     </div>
