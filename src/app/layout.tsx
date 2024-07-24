@@ -1,5 +1,5 @@
 import './globals.css';
-import ApolloClientProvider from './apollo-client';
+import ApolloClientProvider from '../../app/apollo-client';
 import { ReactNode } from "react";
 
 export const metadata = {
