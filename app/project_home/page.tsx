@@ -1,17 +1,18 @@
+"use client";
 import React from 'react'
 
 const Project_Home = () => {
   return (
     <div>
       <div>
-        <p><a href="/org">Organizations</a></p>
+        <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a></p>
       </div>
-      <div style={titleStyle}>
+      <div className="container">
         <h1>Select a Project</h1>
+        <a href="/project_options">
+        <button className="button">Project A</button>
+        </a>
       </div>
-      <a href="/project_options">
-        <button type="button">Project A</button>
-      </a>
       <br />
     </div>
   )
