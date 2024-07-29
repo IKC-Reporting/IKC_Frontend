@@ -1,10 +1,11 @@
 "use client";
-import React, {useState} from 'react'
+import { gql, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import Layout from "../components/Layout";
 
-function getDate()
-{
+function getDate() {
   const today = new Date();
-  const month = today.getMonth()+1;
+  const month = today.getMonth() + 1;
   const year = today.getFullYear();
   const date = today.getDate();
   return `${month}/${date}/${year}`;
@@ -24,32 +25,32 @@ const Add_Item = () => {
         <form action='/thanks_page'>
           <div>
             <label>Item:
-              <br/>
-              <input required type="text"/>
+              <br />
+              <input required type="text" />
             </label>
           </div>
-          <br/>
+          <br />
           <div>
             <label>Quantity:
-              <br/>
-              <input required type="number" min="1"/>
+              <br />
+              <input required type="number" min="1" />
             </label>
           </div>
-          <br/>
+          <br />
           <div>
-          <label>Value per piece(CAD):
-            <br/>
-            <input required type="number" min="0"/>
-          </label>
-          </div>
-          <br/>
-          <div>
-            <label>Description(optional): 
-              <br/>
-              <input type="text"/>
+            <label>Value per piece(CAD):
+              <br />
+              <input required type="number" min="0" />
             </label>
           </div>
-          <br/><br/>
+          <br />
+          <div>
+            <label>Description(optional):
+              <br />
+              <input type="text" />
+            </label>
+          </div>
+          <br /><br />
           <input className="button" type="Submit"></input>
         </form>
       </div>

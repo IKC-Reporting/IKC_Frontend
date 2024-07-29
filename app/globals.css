@@ -73,3 +73,11 @@ body {
 .contribution-table tr:hover {
   background-color: #ddd;
 }
+
+.titleStyle {
+  text-align: Center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+;

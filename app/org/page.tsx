@@ -38,7 +38,7 @@ export const GET_PARTNER_ORGS_FOR_USER = gql`
 
 const SelectOrganization = () => {
   const { loading, error, data } = useQuery(GET_PARTNER_ORGS_FOR_USER, {
-    variables: { userId: "402a8052-9c4d-496e-bd17-d25f3d0c2bf7" },
+    variables: { userId: "24a7cf8c-feca-4863-87e8-1952a18a6973" },
   });
 
   if (loading) return <p>Loading...</p>;
