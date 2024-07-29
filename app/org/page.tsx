@@ -22,10 +22,10 @@ export const GET_PARTNER_ORGS_FOR_USER = gql`
 `;
 
 const SelectOrganization = () => {
-
   const userId = localStorage.getItem("userId");
+
   const { loading, error, data } = useQuery(GET_PARTNER_ORGS_FOR_USER, {
-    variables: { userId: "88c150cc-1235-4523-9224-65caafa935eb" },
+    variables: { userId },
   });
 
   if (loading) return <p>Loading...</p>;
@@ -34,13 +34,15 @@ const SelectOrganization = () => {
     return <p>Error: {error.message}</p>;
   }
 
-  console.log(data);
-
   return (
     <div className="container">
       <h1>Select Organization</h1>
       {data?.getAllOrgsForUser?.map((partnerOrg: PartnerOrg) => (
-        <button key={partnerOrg.id} className="button" onClick={() => window.location.href = "/org_home"}>
+        <button
+          key={partnerOrg.id}
+          className="button"
+          onClick={() => (window.location.href = "/org_home")}
+        >
           {partnerOrg.name}
         </button>
       ))}

@@ -1,45 +1,49 @@
 "use client";
-import { gql, useQuery } from "@apollo/client";
-import { useState } from "react";
-import { useRouter } from 'next/navigation';
+import { gql, useMutation } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const LOGIN = gql`
-  query Query(
-    $email: String!, 
-    $password: String!
-  ) 
-  {
-    login(
-      email: $email, 
-      password: $password
-    )
+  mutation Mutation($email: String!, $password: String!) {
+    login(email: $email, password: $password)
   }
 `;
 
-export default function Home() {
-
+const Home = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const router = useRouter()
+  const [login, { loading, error, data }] = useMutation(LOGIN);
+  const router = useRouter();
+
+  const handleLogin = (loginId: string) => {
+    localStorage.setItem("userId", data?.login);
+    router.push("/org");
+  };
+
+  useEffect(() => {
+    const loginId = data?.login ? data?.login : "";
+    if (loginId.length > 0) {
+      handleLogin(data?.login);
+    }
+  }, [data?.login]);
 
   return (
     <div>
       <p>Login page</p>
       <form
-        onSubmit={e => {
+        onSubmit={(e) => {
+          localStorage.setItem("userId", "");
           e.preventDefault();
-          const { loading, error, data } = useQuery(LOGIN, { variables: { email, password } });
-          localStorage.setItem("userId", data?.login);
-          router.push(
-            '/org',
-          )
+          login({ variables: { email: email, password: password } });
         }}
       >
         <div>
-          <label>Email:
+          <label>
+            Email:
             <input
-              required type="email"
+              required
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -47,18 +51,22 @@ export default function Home() {
         </div>
         <br />
         <div>
-          <label>Password:
+          <label>
+            Password:
             <input
-              required type="password"
+              required
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </label>
         </div>
-        <br /><br />
-        <input type="Submit"></input>
+        <br />
+        <br />
+        <input type="Submit" value="Login"></input>
       </form>
     </div>
-  )
+  );
 };
 
+export default Home;
