@@ -2,7 +2,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import { Contribution, HourContribution, OtherContribution } from "../../utils/graphql";
+import { Contribution } from "../../utils/graphql";
 
 const GET_CONTRIBUTIONS_FOR_USER = gql`
   query UserContributions($userId: ID!) {
@@ -26,7 +26,7 @@ const GET_CONTRIBUTIONS_FOR_USER = gql`
 
 export default function MyContributions() {
   const { loading, error, data } = useQuery(GET_CONTRIBUTIONS_FOR_USER, {
-    variables: { userId: "24a7cf8c-feca-4863-87e8-1952a18a6973" },
+    variables: { userId: "d38cbf18-ac04-4517-96d5-289c2b6222c0" },
   });
   console.log(data?.getAllContributionsForUser);
 

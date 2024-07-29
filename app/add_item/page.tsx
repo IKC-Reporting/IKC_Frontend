@@ -1,19 +1,39 @@
 "use client";
-import { gql, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
+import { gql, useMutation } from "@apollo/client";
+import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
-function getDate() {
-  const today = new Date();
-  const month = today.getMonth() + 1;
-  const year = today.getFullYear();
-  const date = today.getDate();
-  return `${month}/${date}/${year}`;
-}
+const CREATE_ITEM_CONTRIBUTION = gql`
+  mutation Mutation(
+    $contributorId: ID!,
+    $date: DateTime!,
+    $details: String!,
+    $itemName: String!,
+    $value: Float!,
+    $items: Int!
+  )
+  {
+    createOtherContribution(
+      contributorId: $contributorId,
+      date: $date,
+      details: $details,
+      itemName: $itemName,
+      value: $value,
+      items: $items
+    )
+  }
+`;
 
-const Add_Item = () => {
+export default function Add_Item() {
 
-  const [currentDate] = useState(getDate());
+  const [itemName, setItemName] = useState("");
+  const [items, setItems] = useState(0);
+  const [value, setValue] = useState(0);
+  const [details, setDetails] = useState("");
+  const [createOtherContribution, { loading, error, data }] = useMutation(CREATE_ITEM_CONTRIBUTION);
+  const contributorId = "fee9a62e-b403-4162-8e43-deb6b879ac9";
+
+  const router = useRouter()
 
   return (
     <div>
@@ -22,32 +42,57 @@ const Add_Item = () => {
       </div>
       <div>
         <h1>Contribute An Item</h1>
-        <form action='/thanks_page'>
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            createOtherContribution({ variables: { contributorId, itemName, items, value, details, date: new Date().toLocaleString() } });
+            router.push('/thanks_page', { scroll: false })
+          }}
+        >
           <div>
             <label>Item:
               <br />
-              <input required type="text" />
+              <input
+                required type="text"
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
+              />
             </label>
           </div>
           <br />
           <div>
             <label>Quantity:
               <br />
-              <input required type="number" min="1" />
+              <input
+                required type="number"
+                min="1"
+                value={items}
+                onChange={(e) => setItems(parseInt(e.target.value))}
+              />
             </label>
           </div>
           <br />
           <div>
             <label>Value per piece(CAD):
               <br />
-              <input required type="number" min="0" />
+              <input
+                required type="number"
+                min="0"
+                step="0.01"
+                value={value}
+                onChange={(e) => setValue(parseFloat(e.target.value))}
+              />
             </label>
           </div>
           <br />
           <div>
             <label>Description(optional):
               <br />
-              <input type="text" />
+              <input
+                type="text"
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+              />
             </label>
           </div>
           <br /><br />
@@ -57,5 +102,3 @@ const Add_Item = () => {
     </div>
   )
 }
-
-export default Add_Item

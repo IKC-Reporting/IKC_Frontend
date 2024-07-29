@@ -1,7 +1,5 @@
 "use client";
 import { gql, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
 import { ResearchProject } from "../../utils/graphql";
 
 const GET_ALL_PROJ_FOR_ORGS = gql`
@@ -58,7 +56,7 @@ const GET_ALL_PROJ_FOR_ORGS = gql`
 
 export default function Project_Home() {
   const { loading, error, data } = useQuery(GET_ALL_PROJ_FOR_ORGS, {
-    variables: { userId: "24a7cf8c-feca-4863-87e8-1952a18a6973" },
+    variables: { orgId: "3ab3107d-09bc-44cd-b73b-0dfd17bd7576" },
   });
   console.log(data?.getAllProjForOrgs);
 
