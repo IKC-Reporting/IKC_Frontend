@@ -7,7 +7,7 @@ type Contributor = {
   id: string;
   userId: string;
   partnerOrgId: string;
-  researchOrgId: string;
+  researchProjectId: string;
   hourlyRate: number;
   benRatePer: number;
 };
@@ -28,7 +28,7 @@ export const GET_PARTNER_ORG = gql`
         hourlyRate
         id
         partnerOrgId
-        researchOrgId
+        researchProjectId
         userId
       }
       id

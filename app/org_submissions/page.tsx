@@ -27,10 +27,11 @@ type Contribution = {
 type IKCReport = {
   id: string;
   partnerOrgId: string;
+  researchProjectId: string;
   reportStartDate: string;
-  reportEndDate: string;
   contributions: Contribution[];
   submitterId: string;
+  submissionDate: string;
   isApproved: boolean;
   approverId: string;
   approvalDate: string;
@@ -102,7 +103,6 @@ const Submissions = () => {
             <td>{ikcReport.id}</td>
             <td>{ikcReport.partnerOrgId}</td>
             <td>{ikcReport.reportStartDate}</td>
-            <td>{ikcReport.reportEndDate}</td>
             <td>{ikcReport.submitterId}</td>
             <td>{ikcReport.isApproved ? "Approved" : "Not Approved"}</td>
             <td>{ikcReport.approverId}</td>
