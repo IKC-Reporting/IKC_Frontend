@@ -2,40 +2,7 @@
 
 import { gql, useQuery } from '@apollo/client';
 import React from 'react';
-
-type HourContribution = {
-  hours: number;
-  hourlyRate: number;
-  benRatePer: number;
-}
-
-type OtherContribution = {
-  itemName: string;
-  value: number;
-  items: number;
-}
-
-type Contribution = {
-  id: string;
-  contributorId: string;
-  date: string;
-  details: string;
-  hourContribution: HourContribution;
-  otherContribution: OtherContribution;
-}
-
-type IKCReport = {
-  id: string;
-  partnerOrgId: string;
-  researchProjectId: string;
-  reportStartDate: string;
-  contributions: Contribution[];
-  submitterId: string;
-  submissionDate: string;
-  isApproved: boolean;
-  approverId: string;
-  approvalDate: string;
-}
+import { IKCReport } from "../../utils/graphql";
 
 export const GET_IKC_REPORTS_FOR_ORG = gql`
   query getIKCByPartnerOrg($partnerOrgId: ID!) {
@@ -70,7 +37,7 @@ export const GET_IKC_REPORTS_FOR_ORG = gql`
 
 const Submissions = () => {
   const { loading, error, data } = useQuery(GET_IKC_REPORTS_FOR_ORG, {
-    variables: { partnerOrgId: "null" },
+    variables: { partnerOrgId: "3ab3107d-09bc-44cd-b73b-0dfd17bd7576" },
   });
 
   if (loading) return <p>Loading...</p>;

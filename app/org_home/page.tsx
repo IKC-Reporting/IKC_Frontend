@@ -3,22 +3,6 @@
 import { gql, useQuery } from '@apollo/client';
 import React from 'react';
 
-type Contributor = {
-  id: string;
-  userId: string;
-  partnerOrgId: string;
-  researchProjectId: string;
-  hourlyRate: number;
-  benRatePer: number;
-};
-
-type PartnerOrg = {
-  id: string;
-  name: string;
-  admins: string[];
-  contributors: Contributor[];
-};
-
 export const GET_PARTNER_ORG = gql`
   query partnerOrg($id: ID!) {
     partnerOrg(id: $id) {

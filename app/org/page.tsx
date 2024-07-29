@@ -1,22 +1,7 @@
 "use client";
 
 import { gql, useQuery } from "@apollo/client";
-
-type Contributor = {
-  id: string;
-  userId: string;
-  partnerOrgId: string;
-  researchProjectId: string;
-  hourlyRate: number;
-  benRatePer: number;
-};
-
-type PartnerOrg = {
-  id: string;
-  name: string;
-  admins: string[];
-  contributors: Contributor[];
-};
+import { PartnerOrg } from "../../utils/graphql";
 
 export const GET_PARTNER_ORGS_FOR_USER = gql`
   query getAllOrgsForUser($userId: ID!) {
@@ -40,7 +25,7 @@ const SelectOrganization = () => {
 
   const userId = localStorage.getItem("userId");
   const { loading, error, data } = useQuery(GET_PARTNER_ORGS_FOR_USER, {
-    variables: { userId },
+    variables: { userId: "88c150cc-1235-4523-9224-65caafa935eb" },
   });
 
   if (loading) return <p>Loading...</p>;
