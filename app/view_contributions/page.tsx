@@ -2,7 +2,14 @@
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import { Contribution, ProjContrib } from "../../utils/graphql";
+import { Contribution, ProjContrib, MonthlyContrib } from "../../utils/graphql";
+import {
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis
+} from "recharts";
 
 const GET_ALL_APPROVED_CONTRIB_BY_ORG = gql`
   query GetAllApprovedContribByOrg($orgId: ID!) {
@@ -98,10 +105,9 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.hourContribution?.hourlyRate *
+                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate *
                           val?.hourContribution?.hours
-                        }`}</td>
+                          }`}</td>
                       </>
                     )}
                     {!!val.otherContribution && (
@@ -115,10 +121,9 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.otherContribution?.value *
+                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value *
                           val?.otherContribution?.items
-                        }`}</td>
+                          }`}</td>
                       </>
                     )}
                   </tr>
@@ -128,29 +133,35 @@ export default function MyContributions() {
           )}
         </table>
       </div>
+
       {/* below is for charts, only above table needs to have getAllApprovedContribByOrg removed... */}
       <div>
+
+
         {data?.getAllApprovedContribByOrg.map(
           (project: ProjContrib, key: number) => {
-            const months = project.contributions.map((contribution) => {
-              return contribution.month;
-            });
+            console.log(project)
 
-            const totals = project.contributions.map((contribution) => {
-              return contribution.total;
-            });
+            const projContributions: MonthlyContrib[] = project.contributions;
 
-            console.log(months);
-            console.log(totals);
-
-            return <div key={key}>{project.projectName}</div>;
+            return (
+              <div key={key}>
+                <BarChart width={1000} height={300} data={projContributions}>
+                  <Bar dataKey={project.projectName} fill="green" />
+                  <CartesianGrid stroke="#ccc" />
+                  <XAxis dataKey="month" />
+                  <YAxis dataKey="total" />
+                </BarChart>
+              </div>
+            );
           }
         )}
       </div>
+
       <div className="localStorageData">
         <h2>LocalStorage Data:</h2>
         <p>{printLocalStorage()}</p>
       </div>
-    </div>
+    </div >
   );
 }
