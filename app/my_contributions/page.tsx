@@ -5,9 +5,10 @@ import { Contribution } from "../../utils/graphql";
 import { Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 
 const GET_CONTRIBUTIONS_FOR_USER = gql`
-  query UserContributions($userId: ID!) {
-    getAllContributionsForUser(userId: $userId) {
+  query GetAllContributionsForContributor($contributorId: ID!) {
+    getAllContributionsForContributor(contributorId: $contributorId) {
       id
+      contributorId
       date
       details
       hourContribution {
@@ -26,28 +27,37 @@ const GET_CONTRIBUTIONS_FOR_USER = gql`
 
 export default function MyContributions() {
   const [userId, setUserId] = useState<string | null>(null);
+  const [contributorId, setContributorId] = useState<string | null>(null);
   const [contributionData, setContributionData] = useState<Contribution[]>([]);
 
   const { loading, error, data } = useQuery(GET_CONTRIBUTIONS_FOR_USER, {
-    variables: { userId },
+    variables: { contributorId },
     skip: !userId, // Skip query if userId is not yet set
   });
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
+    const storedContributorId = localStorage.getItem("contributorId")
     console.log("Retrieved userId:", storedUserId); // Debugging log
+    console.log("Retrieved userId:", storedContributorId); // Debugging log
     if (storedUserId) {
       setUserId(storedUserId);
     } else {
       console.error("No user ID found in localStorage");
       // Redirect or handle the missing user ID case appropriately
     }
+    if (storedContributorId) {
+      setUserId(storedContributorId);
+    } else {
+      console.error("No contributor ID found in localStorage");
+      // Redirect or handle the missing user ID case appropriately
+    }
 
-    const tempData = data?.getAllContributionsForUser
-      ? data.getAllContributionsForUser
+    const tempData = data?.getAllContributionsForContributor
+      ? data.getAllContributionsForContributor
       : null;
     setContributionData(tempData);
-  }, [data?.getAllContributionsForUser]);
+  }, [data?.getAllContributionsForContributor]);
 
   const printLocalStorage = () => {
     const keys = Object.keys(localStorage);
@@ -70,7 +80,6 @@ export default function MyContributions() {
       return aDate.getTime() - bDate.getTime();
     })
     ?.map((contribution: Contribution) => {
-      let contributionValue = 0;
       let hourlyValue = 0;
       let otherValue = 0;
       if (!!contribution.hourContribution) {
@@ -142,10 +151,9 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.hourContribution?.hourlyRate *
+                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate *
                           val?.hourContribution?.hours
-                        }`}</td>
+                          }`}</td>
                       </>
                     )}
                     {!!val.otherContribution && (
@@ -159,10 +167,9 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.otherContribution?.value *
+                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value *
                           val?.otherContribution?.items
-                        }`}</td>
+                          }`}</td>
                       </>
                     )}
                   </tr>
@@ -172,6 +179,7 @@ export default function MyContributions() {
           )}
         </table>
       </div>
+      {/* Line Chart */}
       <div>
         <h2 style={{ textAlign: "center" }}>All Contributions</h2>
         <LineChart width={600} height={600} data={formattedContributions}>
@@ -182,6 +190,7 @@ export default function MyContributions() {
           <Legend />
         </LineChart>
       </div>
+
       <div className="localStorageData">
         <h2>LocalStorage Data:</h2>
         <p>{printLocalStorage()}</p>
