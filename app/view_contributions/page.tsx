@@ -2,29 +2,19 @@
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import { Contribution } from "../../utils/graphql";
+import { Contribution, ProjContrib } from "../../utils/graphql";
 
 const GET_ALL_APPROVED_CONTRIB_BY_ORG = gql`
-  query Query($orgId: ID!) {
+  query GetAllApprovedContribByOrg($orgId: ID!) {
     getAllApprovedContribByOrg(orgId: $orgId) {
-      id
-      contributorId
-      date
-      details
-      hourContribution {
-        hours
-        hourlyRate
-        benRatePer
-      }
-      otherContribution {
-        itemName
-        value
-        items
+      projectName
+      contributions {
+        month
+        total
       }
     }
   }
 `;
-
 
 export default function MyContributions() {
   const [orgId, setOrgId] = useState<string | null>(null);
@@ -47,7 +37,9 @@ export default function MyContributions() {
 
   const printLocalStorage = () => {
     const keys = Object.keys(localStorage);
-    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    const data = keys
+      .map((key) => `${key}: ${localStorage.getItem(key)}`)
+      .join(", ");
     return data;
   };
 
@@ -77,7 +69,9 @@ export default function MyContributions() {
         >
           <thead>
             <tr>
-              <th style={{ borderBottom: "1px solid black" }}>Contribution ID</th>
+              <th style={{ borderBottom: "1px solid black" }}>
+                Contribution ID
+              </th>
               <th style={{ borderBottom: "1px solid black" }}>Date</th>
               <th style={{ borderBottom: "1px solid black" }}>Details</th>
               <th style={{ borderBottom: "1px solid black" }}>Type</th>
@@ -86,35 +80,72 @@ export default function MyContributions() {
               <th style={{ borderBottom: "1px solid black" }}>Total Value</th>
             </tr>
           </thead>
-          {data?.getAllApprovedContribByOrg?.map((val: Contribution, key: number) => {
-            const date = new Date(val.date).toDateString();
-            return (
-              <tbody key={key}>
-                <tr>
-                  <td style={{ textAlign: "center" }}>{val.id}</td>
-                  <td style={{ textAlign: "center" }}>{date}</td>
-                  <td style={{ textAlign: "center" }}>{val.details}</td>
-                  {!!val.hourContribution && (
-                    <>
-                      <td style={{ textAlign: "center" }}>{"Hourly"}</td>
-                      <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hours}`}</td>
-                      <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate}`}</td>
-                      <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate * val?.hourContribution?.hours}`}</td>
-                    </>
-                  )}
-                  {!!val.otherContribution && (
-                    <>
-                      <td style={{ textAlign: "center" }}>{val.otherContribution.itemName}</td>
-                      <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.items}`}</td>
-                      <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value}`}</td>
-                      <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value * val?.otherContribution?.items}`}</td>
-                    </>
-                  )}
-                </tr>
-              </tbody>
-            );
-          })}
+          {data?.getAllApprovedContribByOrg?.map(
+            (val: Contribution, key: number) => {
+              const date = new Date(val.date).toDateString();
+              return (
+                <tbody key={key}>
+                  <tr>
+                    <td style={{ textAlign: "center" }}>{val.id}</td>
+                    <td style={{ textAlign: "center" }}>{date}</td>
+                    <td style={{ textAlign: "center" }}>{val.details}</td>
+                    {!!val.hourContribution && (
+                      <>
+                        <td style={{ textAlign: "center" }}>{"Hourly"}</td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.hourContribution?.hours}`}</td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.hourContribution?.hourlyRate}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.hourContribution?.hourlyRate *
+                          val?.hourContribution?.hours
+                        }`}</td>
+                      </>
+                    )}
+                    {!!val.otherContribution && (
+                      <>
+                        <td style={{ textAlign: "center" }}>
+                          {val.otherContribution.itemName}
+                        </td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.otherContribution?.items}`}</td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.otherContribution?.value}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.otherContribution?.value *
+                          val?.otherContribution?.items
+                        }`}</td>
+                      </>
+                    )}
+                  </tr>
+                </tbody>
+              );
+            }
+          )}
         </table>
+      </div>
+      {/* below is for charts, only above table needs to have getAllApprovedContribByOrg removed... */}
+      <div>
+        {data?.getAllApprovedContribByOrg.map(
+          (project: ProjContrib, key: number) => {
+            const months = project.contributions.map((contribution) => {
+              return contribution.month;
+            });
+
+            const totals = project.contributions.map((contribution) => {
+              return contribution.total;
+            });
+
+            console.log(months);
+            console.log(totals);
+
+            return <div key={key}>{project.projectName}</div>;
+          }
+        )}
       </div>
       <div className="localStorageData">
         <h2>LocalStorage Data:</h2>
