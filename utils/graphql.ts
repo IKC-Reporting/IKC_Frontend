@@ -47,6 +47,16 @@ export type Contribution = {
     otherContribution: OtherContribution;
 };
 
+export type MonthlyContrib = {
+    month: string;
+    total: number
+}
+
+export type ProjContrib = {
+    projectName: string;
+    contributions: [MonthlyContrib]
+}
+
 export type IKCReport = {
     id: string;
     partnerOrgId: string;

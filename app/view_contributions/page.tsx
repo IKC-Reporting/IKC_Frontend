@@ -25,6 +25,7 @@ const GET_ALL_APPROVED_CONTRIB_BY_ORG = gql`
   }
 `;
 
+
 export default function MyContributions() {
   const [orgId, setOrgId] = useState<string | null>(null);
 
@@ -62,8 +63,7 @@ export default function MyContributions() {
         <p>
           <a href="/org">Organizations</a> {"<"}{" "}
           <a href="/org_home">Organization Home</a> {"<"}{" "}
-          <a href="/project_home">Project Home</a> {"<"}{" "}
-          <a href="/project_options">Project Options</a>
+          <a href="/org_options">Organization Options</a>
         </p>
       </div>
       <h1>My Contributions</h1>
