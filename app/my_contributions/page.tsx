@@ -1,7 +1,6 @@
 "use client";
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
 import { Contribution } from "../../utils/graphql";
 
 const GET_CONTRIBUTIONS_FOR_USER = gql`
@@ -25,10 +24,35 @@ const GET_CONTRIBUTIONS_FOR_USER = gql`
 `;
 
 export default function MyContributions() {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    console.log("Retrieved userId:", storedUserId); // Debugging log
+    if (storedUserId) {
+      setUserId(storedUserId);
+    } else {
+      console.error("No user ID found in localStorage");
+      // Redirect or handle the missing user ID case appropriately
+    }
+  }, []);
+
   const { loading, error, data } = useQuery(GET_CONTRIBUTIONS_FOR_USER, {
-    variables: { userId: "d38cbf18-ac04-4517-96d5-289c2b6222c0" },
+    variables: { userId },
+    skip: !userId, // Skip query if userId is not yet set
   });
-  console.log(data?.getAllContributionsForUser);
+
+  const printLocalStorage = () => {
+    const keys = Object.keys(localStorage);
+    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    return data;
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) {
+    console.error(error);
+    return <p>Error: {error.message}</p>;
+  }
 
   return (
     <div>
@@ -55,7 +79,6 @@ export default function MyContributions() {
               <th style={{ borderBottom: "1px solid black" }}>Date</th>
               <th style={{ borderBottom: "1px solid black" }}>Details</th>
               <th style={{ borderBottom: "1px solid black" }}>Type</th>
-
               <th style={{ borderBottom: "1px solid black" }}>Hours/Items</th>
               <th style={{ borderBottom: "1px solid black" }}>Value Per</th>
               <th style={{ borderBottom: "1px solid black" }}>Total Value</th>
@@ -65,41 +88,25 @@ export default function MyContributions() {
             (val: Contribution, key: number) => {
               const date = new Date(val.date).toDateString();
               return (
-                <tbody>
-                  <tr key={key}>
+                <tbody key={key}>
+                  <tr>
                     <td style={{ textAlign: "center" }}>{val.id}</td>
                     <td style={{ textAlign: "center" }}>{date}</td>
                     <td style={{ textAlign: "center" }}>{val.details}</td>
                     {!!val.hourContribution && (
                       <>
                         <td style={{ textAlign: "center" }}>{"Hourly"}</td>
-
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.hourContribution?.hours}`}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate *
-                          val?.hourContribution?.hours
-                          }`}</td>
+                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hours}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate * val?.hourContribution?.hours}`}</td>
                       </>
                     )}
                     {!!val.otherContribution && (
                       <>
-                        <td style={{ textAlign: "center" }}>
-                          {val.otherContribution.itemName}
-                        </td>
-
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.otherContribution?.items}`}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value *
-                          val?.otherContribution?.items
-                          }`}</td>
+                        <td style={{ textAlign: "center" }}>{val.otherContribution.itemName}</td>
+                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.items}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value * val?.otherContribution?.items}`}</td>
                       </>
                     )}
                   </tr>
@@ -108,6 +115,10 @@ export default function MyContributions() {
             }
           )}
         </table>
+      </div>
+      <div className="localStorageData">
+        <h2>LocalStorage Data:</h2>
+        <p>{printLocalStorage()}</p>
       </div>
     </div>
   );

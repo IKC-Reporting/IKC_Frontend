@@ -60,7 +60,7 @@ const Org_Home = () => {
         <br />
         <button className="button" onClick={() => window.location.href = "/project_home"}>View all Projects</button>
         <br />
-        <button className="buttonback" onClick={() => window.location.href = "/select_organization"}>View All Organizations</button>
+        <button className="buttonback" onClick={() => window.location.href = "/org"}>View All Organizations</button>
       </div>
       <div className="localStorageData">
         <h2>LocalStorage Data:</h2>

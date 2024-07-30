@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { Contribution } from "../../utils/graphql";
 
-const GET_ALL_CONTRIBUTIONS = gql`
-  query Query($contributorId: ID!) {
-    getAllContributionsForContributor(contributorId: $contributorId) {
+const GET_ALL_APPROVED_CONTRIB_BY_ORG = gql`
+  query Query($orgId: ID!) {
+    getAllApprovedContribByOrg(orgId: $orgId) {
       id
       contributorId
       date
@@ -26,22 +26,23 @@ const GET_ALL_CONTRIBUTIONS = gql`
 `;
 
 export default function MyContributions() {
-  const [contributorId, setContributorId] = useState<string | null>(null);
+  const [orgId, setOrgId] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedContributorId = localStorage.getItem("contributorId");
-    console.log("Retrieved contributorId:", storedContributorId); // Debugging log
-    if (storedContributorId) {
-      setContributorId(storedContributorId);
+    const storedOrgId = localStorage.getItem("orgId");
+    console.log("Retrieved orgId:", storedOrgId); // Debugging log
+    if (storedOrgId) {
+      setOrgId(storedOrgId);
     } else {
-      console.error("No contributor ID found in localStorage");
-      // Redirect or handle the missing contributor ID case appropriately
+      console.error("No organization ID found in localStorage");
+      // Redirect or handle the missing organization ID case appropriately
     }
   }, []);
 
-  const { loading, error, data } = useQuery(GET_ALL_CONTRIBUTIONS, {
-    variables: { contributorId: "fee9a62e-b403-4162-8e43-deb6b879ac9" },
-  }); 
+  const { loading, error, data } = useQuery(GET_ALL_APPROVED_CONTRIB_BY_ORG, {
+    variables: { orgId },
+    skip: !orgId, // Skip the query if orgId is not set
+  });
 
   const printLocalStorage = () => {
     const keys = Object.keys(localStorage);
@@ -53,7 +54,7 @@ export default function MyContributions() {
     console.log("LocalStorage Data:", printLocalStorage());
   }, []);
 
-  console.log(data?.getAllContributionsForContributor);
+  console.log(data?.getAllApprovedContribByOrg);
 
   return (
     <div>
@@ -85,7 +86,7 @@ export default function MyContributions() {
               <th style={{ borderBottom: "1px solid black" }}>Total Value</th>
             </tr>
           </thead>
-          {data?.getAllContributionsForContributor?.map((val: Contribution, key: number) => {
+          {data?.getAllApprovedContribByOrg?.map((val: Contribution, key: number) => {
             const date = new Date(val.date).toDateString();
             return (
               <tbody key={key}>

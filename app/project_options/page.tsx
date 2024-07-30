@@ -1,6 +1,34 @@
 "use client";
+import { useEffect, useState } from "react";
 
 const Project_Options = () => {
+  const [projectId, setProjectId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedProjectId = localStorage.getItem("projectId");
+    console.log("Retrieved projectId:", storedProjectId); // Debugging log
+    if (storedProjectId) {
+      setProjectId(storedProjectId);
+    } else {
+      console.error("No project ID found in localStorage");
+      // Redirect or handle the missing project ID case appropriately
+    }
+  }, []);
+
+  const handleNavigation = (url: string) => {
+    if (projectId) {
+      window.location.href = `${url}?projectId=${projectId}`;
+    } else {
+      window.location.href = url;
+    }
+  };
+
+  const printLocalStorage = () => {
+    const keys = Object.keys(localStorage);
+    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    return data;
+  };
+
   return (
     <div>
       <div>
@@ -8,13 +36,18 @@ const Project_Options = () => {
       </div>
       <div className="container">
         <h1>Project Options</h1>
-        <a href="/add_contribution"><button className="button">Add A Contribution</button></a>
+        <p>Current Project ID: {projectId}</p>
+        <button className="button" onClick={() => handleNavigation("/add_contribution")}>Add A Contribution</button>
         <br/><br/>
-        <a href="/my_contributions"><button className="button">View Your Contributions</button></a>
+        <button className="button" onClick={() => handleNavigation("/my_contributions")}>View Your Contributions</button>
         <br/>
       </div>
+      <div className="localStorageData">
+        <h2>LocalStorage Data:</h2>
+        <p>{printLocalStorage()}</p>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Project_Options
+export default Project_Options;

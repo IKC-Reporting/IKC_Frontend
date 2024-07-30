@@ -1,7 +1,34 @@
 "use client";
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 
 const Submit_Contribution = () => {
+  const [projectId, setProjectId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedProjectId = localStorage.getItem("projectId");
+    console.log("Retrieved projectId:", storedProjectId); // Debugging log
+    if (storedProjectId) {
+      setProjectId(storedProjectId);
+    } else {
+      console.error("No project ID found in localStorage");
+      // Redirect or handle the missing project ID case appropriately
+    }
+  }, []);
+
+  const handleNavigation = (url: string) => {
+    if (projectId) {
+      window.location.href = `${url}?projectId=${projectId}`;
+    } else {
+      window.location.href = url;
+    }
+  };
+
+  const printLocalStorage = () => {
+    const keys = Object.keys(localStorage);
+    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    return data;
+  };
+
   return (
     <div>
       <div>
@@ -9,12 +36,17 @@ const Submit_Contribution = () => {
       </div>
       <div className='container'>
         <h1>Submit Contribution</h1>
-        <a href="/add_item"><button className="button">Add A Item</button></a>
+        <p>Current Project ID: {projectId}</p>
+        <button className="button" onClick={() => handleNavigation("/add_item")}>Add A Item</button>
         <br /><br />
-        <a href="/add_service"><button className="button">Add A Service</button></a>
+        <button className="button" onClick={() => handleNavigation("/add_service")}>Add A Service</button>
+      </div>
+      <div className="localStorageData">
+        <h2>LocalStorage Data:</h2>
+        <p>{printLocalStorage()}</p>
       </div>
     </div>
-  )
+  );
 }
 
-export default Submit_Contribution
+export default Submit_Contribution;

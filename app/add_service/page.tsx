@@ -1,6 +1,6 @@
 "use client";
 import { gql, useMutation } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 
 const HOURLY_CONTRIBUTION = gql`
@@ -20,15 +20,43 @@ const HOURLY_CONTRIBUTION = gql`
 }
 `;
 
-
 export default function Add_Service() {
-
   const [hours, setHours] = useState(0);
   const [details, setDetails] = useState("");
+  const [contributorId, setContributorId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [createHourContribution, { loading, error, data }] = useMutation(HOURLY_CONTRIBUTION);
-  const contributorId = "fee9a62e-b403-4162-8e43-deb6b879ac9";
+  const router = useRouter();
 
-  const router = useRouter()
+  useEffect(() => {
+    const storedContributorId = localStorage.getItem("contributorId");
+    const storedProjectId = localStorage.getItem("projectId");
+    setContributorId(storedContributorId);
+    setProjectId(storedProjectId);
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (contributorId && projectId) {
+      createHourContribution({
+        variables: {
+          contributorId,
+          date: new Date().toISOString(),
+          details,
+          hours
+        }
+      });
+      router.push('/thanks_page', { scroll: false });
+    } else {
+      console.error("Contributor ID or Project ID not found in local storage.");
+    }
+  };
+
+  const printLocalStorage = () => {
+    const keys = Object.keys(localStorage);
+    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    return data;
+  };
 
   return (
     <div>
@@ -37,12 +65,7 @@ export default function Add_Service() {
       </div>
       <div>
         <h1>Contribute A Service</h1>
-        <form
-          onSubmit={e => {
-            e.preventDefault();
-            createHourContribution({ variables: { contributorId, hours, details, date: new Date().toLocaleString() } });
-            router.push('/thanks_page', { scroll: false })
-          }}>
+        <form onSubmit={handleSubmit}>
           <div>
             <label>Number of Hours(to the closest 0.25hrs):
               <br />
@@ -69,6 +92,10 @@ export default function Add_Service() {
           <input className="button" type="Submit"></input>
         </form>
       </div>
+      <div className="localStorageData">
+        <h2>LocalStorage Data:</h2>
+        <p>{printLocalStorage()}</p>
+      </div>
     </div>
-  )
+  );
 }
