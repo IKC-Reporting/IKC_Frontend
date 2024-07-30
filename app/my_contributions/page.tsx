@@ -2,6 +2,7 @@
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { Contribution } from "../../utils/graphql";
+import { Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 
 const GET_CONTRIBUTIONS_FOR_USER = gql`
   query UserContributions($userId: ID!) {
@@ -25,6 +26,12 @@ const GET_CONTRIBUTIONS_FOR_USER = gql`
 
 export default function MyContributions() {
   const [userId, setUserId] = useState<string | null>(null);
+  const [contributionData, setContributionData] = useState<Contribution[]>([]);
+
+  const { loading, error, data } = useQuery(GET_CONTRIBUTIONS_FOR_USER, {
+    variables: { userId },
+    skip: !userId, // Skip query if userId is not yet set
+  });
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -35,16 +42,18 @@ export default function MyContributions() {
       console.error("No user ID found in localStorage");
       // Redirect or handle the missing user ID case appropriately
     }
-  }, []);
 
-  const { loading, error, data } = useQuery(GET_CONTRIBUTIONS_FOR_USER, {
-    variables: { userId },
-    skip: !userId, // Skip query if userId is not yet set
-  });
+    const tempData = data?.getAllContributionsForUser
+      ? data.getAllContributionsForUser
+      : null;
+    setContributionData(tempData);
+  }, [data?.getAllContributionsForUser]);
 
   const printLocalStorage = () => {
     const keys = Object.keys(localStorage);
-    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    const data = keys
+      .map((key) => `${key}: ${localStorage.getItem(key)}`)
+      .join(", ");
     return data;
   };
 
@@ -53,6 +62,35 @@ export default function MyContributions() {
     console.error(error);
     return <p>Error: {error.message}</p>;
   }
+
+  const formattedContributions = contributionData
+    ?.toSorted((a: Contribution, b: Contribution) => {
+      const aDate = new Date(a.date);
+      const bDate = new Date(b.date);
+      return aDate.getTime() - bDate.getTime();
+    })
+    ?.map((contribution: Contribution) => {
+      let contributionValue = 0;
+      let hourlyValue = 0;
+      let otherValue = 0;
+      if (!!contribution.hourContribution) {
+        hourlyValue =
+          contribution?.hourContribution?.hourlyRate *
+          contribution?.hourContribution?.hours;
+      } else if (!!contribution.otherContribution) {
+        otherValue =
+          contribution?.otherContribution?.value *
+          contribution?.otherContribution?.items;
+      }
+      return {
+        date: new Date(contribution.date).toLocaleString("default", {
+          month: "short",
+          year: "2-digit",
+        }),
+        hourlyValue,
+        otherValue,
+      };
+    });
 
   return (
     <div>
@@ -75,7 +113,9 @@ export default function MyContributions() {
         >
           <thead>
             <tr>
-              <th style={{ borderBottom: "1px solid black" }}>Contribution ID</th>
+              <th style={{ borderBottom: "1px solid black" }}>
+                Contribution ID
+              </th>
               <th style={{ borderBottom: "1px solid black" }}>Date</th>
               <th style={{ borderBottom: "1px solid black" }}>Details</th>
               <th style={{ borderBottom: "1px solid black" }}>Type</th>
@@ -96,17 +136,33 @@ export default function MyContributions() {
                     {!!val.hourContribution && (
                       <>
                         <td style={{ textAlign: "center" }}>{"Hourly"}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hours}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate * val?.hourContribution?.hours}`}</td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.hourContribution?.hours}`}</td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.hourContribution?.hourlyRate}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.hourContribution?.hourlyRate *
+                          val?.hourContribution?.hours
+                        }`}</td>
                       </>
                     )}
                     {!!val.otherContribution && (
                       <>
-                        <td style={{ textAlign: "center" }}>{val.otherContribution.itemName}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.items}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value * val?.otherContribution?.items}`}</td>
+                        <td style={{ textAlign: "center" }}>
+                          {val.otherContribution.itemName}
+                        </td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.otherContribution?.items}`}</td>
+                        <td
+                          style={{ textAlign: "center" }}
+                        >{`${val?.otherContribution?.value}`}</td>
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.otherContribution?.value *
+                          val?.otherContribution?.items
+                        }`}</td>
                       </>
                     )}
                   </tr>
@@ -115,6 +171,16 @@ export default function MyContributions() {
             }
           )}
         </table>
+      </div>
+      <div>
+        <h2 style={{ textAlign: "center" }}>All Contributions</h2>
+        <LineChart width={600} height={600} data={formattedContributions}>
+          <XAxis dataKey="date" />
+          <YAxis tickFormatter={(v) => `$${v}`} />
+          <Line type="monotone" stroke="#8884d8" dataKey="hourlyValue" />
+          <Line type="monotone" stroke="#82ca9d" dataKey="otherValue" />
+          <Legend />
+        </LineChart>
       </div>
       <div className="localStorageData">
         <h2>LocalStorage Data:</h2>

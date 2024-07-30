@@ -8,7 +8,8 @@ import {
   Bar,
   CartesianGrid,
   XAxis,
-  YAxis
+  YAxis,
+  ResponsiveContainer,
 } from "recharts";
 
 const GET_ALL_APPROVED_CONTRIB_BY_ORG = gql`
@@ -23,8 +24,9 @@ const GET_ALL_APPROVED_CONTRIB_BY_ORG = gql`
   }
 `;
 
-export default function MyContributions() {
+const MyContributions = () => {
   const [orgId, setOrgId] = useState<string | null>(null);
+  const [projectChartData, setProjectChartData] = useState<ProjContrib[]>([]);
 
   useEffect(() => {
     const storedOrgId = localStorage.getItem("orgId");
@@ -52,7 +54,12 @@ export default function MyContributions() {
 
   useEffect(() => {
     console.log("LocalStorage Data:", printLocalStorage());
-  }, []);
+
+    const tempData = data?.getAllApprovedContribByOrg
+      ? data?.getAllApprovedContribByOrg
+      : [];
+    setProjectChartData(tempData);
+  }, [data?.getAllApprovedContribByOrg]);
 
   console.log(data?.getAllApprovedContribByOrg);
 
@@ -105,9 +112,10 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate *
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.hourContribution?.hourlyRate *
                           val?.hourContribution?.hours
-                          }`}</td>
+                        }`}</td>
                       </>
                     )}
                     {!!val.otherContribution && (
@@ -121,9 +129,10 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value *
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.otherContribution?.value *
                           val?.otherContribution?.items
-                          }`}</td>
+                        }`}</td>
                       </>
                     )}
                   </tr>
@@ -136,32 +145,28 @@ export default function MyContributions() {
 
       {/* below is for charts, only above table needs to have getAllApprovedContribByOrg removed... */}
       <div>
+        {projectChartData?.map((project: ProjContrib, key: number) => {
+          const projContributions: MonthlyContrib[] = project.contributions;
 
-
-        {data?.getAllApprovedContribByOrg.map(
-          (project: ProjContrib, key: number) => {
-            console.log(project)
-
-            const projContributions: MonthlyContrib[] = project.contributions;
-
-            return (
-              <div key={key}>
-                <BarChart width={1000} height={300} data={projContributions}>
-                  <Bar dataKey={project.projectName} fill="green" />
-                  <CartesianGrid stroke="#ccc" />
-                  <XAxis dataKey="month" />
-                  <YAxis dataKey="total" />
-                </BarChart>
-              </div>
-            );
-          }
-        )}
+          return (
+            <div key={key}>
+              <h2 style={{ textAlign: "center" }}>{project.projectName}</h2>
+              <BarChart width={600} height={600} data={projContributions}>
+                <Bar dataKey="total" fill="green" />
+                <XAxis dataKey="month" />
+                <YAxis tickFormatter={(v) => `$${v}`} />
+              </BarChart>
+            </div>
+          );
+        })}
       </div>
 
       <div className="localStorageData">
         <h2>LocalStorage Data:</h2>
         <p>{printLocalStorage()}</p>
       </div>
-    </div >
+    </div>
   );
-}
+};
+
+export default MyContributions;
