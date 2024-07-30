@@ -1,7 +1,7 @@
 "use client";
 
 import { gql, useQuery } from '@apollo/client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 export const GET_PARTNER_ORG = gql`
   query partnerOrg($id: ID!) {
@@ -22,9 +22,28 @@ export const GET_PARTNER_ORG = gql`
 `;
 
 const Org_Home = () => {
+  const [orgId, setOrgId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedOrgId = localStorage.getItem("orgId");
+    console.log("Retrieved orgId:", storedOrgId); // Debugging log
+    if (storedOrgId) {
+      setOrgId(storedOrgId);
+    } else {
+      window.location.href = "/select_organization"; // Redirect if orgId is not found
+    }
+  }, []);
+
   const { loading, error, data } = useQuery(GET_PARTNER_ORG, {
-    variables: { id: "3ab3107d-09bc-44cd-b73b-0dfd17bd7576" },
+    variables: { id: orgId },
+    skip: !orgId,  // Skip query if orgId is not yet set
   });
+
+  const printLocalStorage = () => {
+    const keys = Object.keys(localStorage);
+    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    return data;
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) {
@@ -32,18 +51,20 @@ const Org_Home = () => {
     return <p>Error: {error.message}</p>;
   }
 
-  console.log(data);
-
   return (
     <div>
-      <p><a href="/org">Organizations</a></p>
+      <p><a href="/select_organization">Organizations</a></p>
       <div className="container">
         <p>{data?.partnerOrg?.name} Home</p>
         <button className="button" onClick={() => window.location.href = "/org_options"}>Organization Options</button>
         <br />
         <button className="button" onClick={() => window.location.href = "/project_home"}>View all Projects</button>
         <br />
-        <button className="buttonback" onClick={() => window.location.href = "/org"}>View All Organizations</button>
+        <button className="buttonback" onClick={() => window.location.href = "/select_organization"}>View All Organizations</button>
+      </div>
+      <div className="localStorageData">
+        <h2>LocalStorage Data:</h2>
+        <p>{printLocalStorage()}</p>
       </div>
     </div>
   );
