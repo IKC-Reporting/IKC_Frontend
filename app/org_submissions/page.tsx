@@ -6,8 +6,8 @@ import React, { useEffect, useState } from "react";
 import { IKCReport } from "../../utils/graphql";
 
 export const GET_IKC_REPORTS_FOR_ORG = gql`
-  query GetAllIKCByPartnerOrg($getAllIkcByPartnerOrgId: ID!) {
-    getAllIKCByPartnerOrg(id: $getAllIkcByPartnerOrgId) {
+  query GetAllIKCByPartnerOrg($partnerOrgId: ID!) {
+    getAllIKCByPartnerOrg(id: $partnerOrgId) {
       approvalDate
       approverId
       contributions {
@@ -38,18 +38,10 @@ export const GET_IKC_REPORTS_FOR_ORG = gql`
 `;
 
 const Submissions = () => {
-  const partnerOrg = localStorage.getItem("orgId");
+  const partnerOrgId = localStorage.getItem("orgId");
   const { loading, error, data } = useQuery(GET_IKC_REPORTS_FOR_ORG, {
-    variables: { partnerOrgId: partnerOrg },
+    variables: { partnerOrgId },
   });
-
-  const printLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    const data = keys
-      .map((key) => `${key}: ${localStorage.getItem(key)}`)
-      .join(", ");
-    return data;
-  };
 
   if (loading) return <p>Loading...</p>;
   if (error) {
@@ -149,11 +141,6 @@ const Submissions = () => {
           </ul>
         </>
       )}
-
-      <div className="localStorageData">
-        <h2>LocalStorage Data:</h2>
-        <p>{printLocalStorage()}</p>
-      </div>
     </div>
   );
 };
