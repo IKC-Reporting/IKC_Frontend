@@ -1,4 +1,6 @@
 "use client";
+
+import React from 'react';
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { Contribution } from "../../utils/graphql";
@@ -36,11 +38,11 @@ export default function MyContributions() {
   });
 
   useEffect(() => {
-    const tempData = data?.getAllContributionsForContributor
-      ? data.getAllContributionsForContributor
-      : null;
-    setContributionData(tempData);
-  }, [data?.getAllContributionsForContributor]);
+    if (data?.getAllContributionsForContributor) {
+      console.log('Fetched data:', data.getAllContributionsForContributor); // Log data
+      setContributionData(data.getAllContributionsForContributor);
+    }
+  }, [data]);
 
   if (loading) return <p>Loading...</p>;
   if (error) {
@@ -49,22 +51,19 @@ export default function MyContributions() {
   }
 
   const formattedContributions = contributionData
-    ?.toSorted((a: Contribution, b: Contribution) => {
-      const aDate = new Date(a.date);
-      const bDate = new Date(b.date);
-      return aDate.getTime() - bDate.getTime();
-    })
-    ?.map((contribution: Contribution) => {
+    .slice() // Create a copy of the array to avoid mutating the original data
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((contribution) => {
       let hourlyValue = 0;
       let otherValue = 0;
-      if (!!contribution.hourContribution) {
+      if (contribution.hourContribution) {
         hourlyValue =
-          contribution?.hourContribution?.hourlyRate *
-          contribution?.hourContribution?.hours;
-      } else if (!!contribution.otherContribution) {
+          contribution.hourContribution.hourlyRate *
+          contribution.hourContribution.hours;
+      } else if (contribution.otherContribution) {
         otherValue =
-          contribution?.otherContribution?.value *
-          contribution?.otherContribution?.items;
+          contribution.otherContribution.value *
+          contribution.otherContribution.items;
       }
       return {
         date: new Date(contribution.date).toLocaleString("default", {
@@ -88,11 +87,14 @@ export default function MyContributions() {
       </div>
       <h1>My Contributions</h1>
       <div>
+        <p style={{ fontStyle: 'italic', color: 'gray' }}>
+          Note: May include non-approved items.
+        </p>
         <table
           style={{
             border: "2px solid forestgreen",
             width: "800px",
-            height: "200px",
+            height: "auto",
           }}
         >
           <thead>
@@ -108,50 +110,34 @@ export default function MyContributions() {
               <th style={{ borderBottom: "1px solid black" }}>Total Value</th>
             </tr>
           </thead>
-          {data?.getAllContributionsForUser?.map(
-            (val: Contribution, key: number) => {
+          <tbody>
+            {contributionData.map((val: Contribution, key: number) => {
               const date = new Date(val.date).toDateString();
               return (
-                <tbody key={key}>
-                  <tr>
-                    <td style={{ textAlign: "center" }}>{val.id}</td>
-                    <td style={{ textAlign: "center" }}>{date}</td>
-                    <td style={{ textAlign: "center" }}>{val.details}</td>
-                    {!!val.hourContribution && (
-                      <>
-                        <td style={{ textAlign: "center" }}>{"Hourly"}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.hourContribution?.hours}`}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate *
-                          val?.hourContribution?.hours
-                          }`}</td>
-                      </>
-                    )}
-                    {!!val.otherContribution && (
-                      <>
-                        <td style={{ textAlign: "center" }}>
-                          {val.otherContribution.itemName}
-                        </td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.otherContribution?.items}`}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value *
-                          val?.otherContribution?.items
-                          }`}</td>
-                      </>
-                    )}
-                  </tr>
-                </tbody>
+                <tr key={key}>
+                  <td style={{ textAlign: "center" }}>{val.id}</td>
+                  <td style={{ textAlign: "center" }}>{date}</td>
+                  <td style={{ textAlign: "center" }}>{val.details}</td>
+                  {val.hourContribution && (
+                    <>
+                      <td style={{ textAlign: "center" }}>Hourly</td>
+                      <td style={{ textAlign: "center" }}>{val.hourContribution.hours}</td>
+                      <td style={{ textAlign: "center" }}>{val.hourContribution.hourlyRate}</td>
+                      <td style={{ textAlign: "center" }}>{val.hourContribution.hourlyRate * val.hourContribution.hours}</td>
+                    </>
+                  )}
+                  {val.otherContribution && (
+                    <>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.itemName}</td>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.items}</td>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.value}</td>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.value * val.otherContribution.items}</td>
+                    </>
+                  )}
+                </tr>
               );
-            }
-          )}
+            })}
+          </tbody>
         </table>
       </div>
       {/* Line Chart */}
