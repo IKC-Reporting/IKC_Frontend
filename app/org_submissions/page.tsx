@@ -1,12 +1,12 @@
 "use client"
 
 import { gql, useQuery } from '@apollo/client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IKCReport } from "../../utils/graphql";
 
 export const GET_IKC_REPORTS_FOR_ORG = gql`
-  query getIKCByPartnerOrg($partnerOrgId: ID!) {
-    getIKCByPartnerOrg(partnerOrgId: $partnerOrgId) {
+  query GetAllIKCByPartnerOrg($getAllIkcByPartnerOrgId: ID!) {
+    getAllIKCByPartnerOrg(id: $getAllIkcByPartnerOrgId) {
       approvalDate
       approverId
       contributions {
@@ -28,17 +28,37 @@ export const GET_IKC_REPORTS_FOR_ORG = gql`
       id
       isApproved
       partnerOrgId
-      reportEndDate
       reportStartDate
+      researchProjectId
+      submissionDate
       submitterId
     }
   }
 `;
 
 const Submissions = () => {
+  const [getAllIkcByPartnerOrgId, setOrgId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedOrgId = localStorage.getItem("getAllIkcByPartnerOrgId");
+    console.log("Retrieved getAllIkcByPartnerOrgId:", storedOrgId); // Debugging log
+    if (storedOrgId) {
+      setOrgId(storedOrgId);
+    } else {
+      window.location.href = "/select_organization"; // Redirect if orgId is not found
+    }
+  }, []);
+
   const { loading, error, data } = useQuery(GET_IKC_REPORTS_FOR_ORG, {
-    variables: { partnerOrgId: "3ab3107d-09bc-44cd-b73b-0dfd17bd7576" },
+    variables: { partnerOrgId: getAllIkcByPartnerOrgId },
+    skip: !getAllIkcByPartnerOrgId,
   });
+
+  const printLocalStorage = () => {
+    const keys = Object.keys(localStorage);
+    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    return data;
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) {
@@ -110,6 +130,10 @@ const Submissions = () => {
           ))}
         </tbody>
       </table>
+      <div className="localStorageData">
+        <h2>LocalStorage Data:</h2>
+        <p>{printLocalStorage()}</p>
+      </div>
     </div>
   );
 };
