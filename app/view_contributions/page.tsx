@@ -39,6 +39,7 @@ const MyContributions = () => {
     const tempData = data?.getAllApprovedContribByOrg
       ? data?.getAllApprovedContribByOrg
       : [];
+
     setProjectChartData(tempData);
   }, [data?.getAllApprovedContribByOrg]);
 
@@ -51,75 +52,45 @@ const MyContributions = () => {
           <a href="/org_options">Organization Options</a>
         </p>
       </div>
-      <h1>`${data?.getAllApprovedContribByOrg?.projectName} Contributions`</h1>
+      <h1>Project Contributions</h1>
       <div>
-        <table
-          style={{
-            border: "2px solid forestgreen",
-            width: "800px",
-            height: "200px",
-          }}
-        >
-          <thead>
-            <tr>
-              <th style={{ borderBottom: "1px solid black" }}>
-                Contribution ID
-              </th>
-              <th style={{ borderBottom: "1px solid black" }}>Date</th>
-              <th style={{ borderBottom: "1px solid black" }}>Details</th>
-              <th style={{ borderBottom: "1px solid black" }}>Type</th>
-              <th style={{ borderBottom: "1px solid black" }}>Hours/Items</th>
-              <th style={{ borderBottom: "1px solid black" }}>Value Per</th>
-              <th style={{ borderBottom: "1px solid black" }}>Total Value</th>
-            </tr>
-          </thead>
-          {data?.getAllApprovedContribByOrg?.map(
-            (val: Contribution, key: number) => {
-              const date = new Date(val.date).toDateString();
-              return (
-                <tbody key={key}>
-                  <tr>
-                    <td style={{ textAlign: "center" }}>{val.id}</td>
-                    <td style={{ textAlign: "center" }}>{date}</td>
-                    <td style={{ textAlign: "center" }}>{val.details}</td>
-                    {!!val.hourContribution && (
-                      <>
-                        <td style={{ textAlign: "center" }}>{"Hourly"}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.hourContribution?.hours}`}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.hourContribution?.hourlyRate *
-                          val?.hourContribution?.hours
-                        }`}</td>
-                      </>
-                    )}
-                    {!!val.otherContribution && (
-                      <>
-                        <td style={{ textAlign: "center" }}>
-                          {val.otherContribution.itemName}
-                        </td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.otherContribution?.items}`}</td>
-                        <td
-                          style={{ textAlign: "center" }}
-                        >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.otherContribution?.value *
-                          val?.otherContribution?.items
-                        }`}</td>
-                      </>
-                    )}
-                  </tr>
-                </tbody>
-              );
-            }
-          )}
-        </table>
+        {data?.getAllApprovedContribByOrg?.map(
+          (project: ProjContrib, key: number) => {
+            return (
+              <div key={key}>
+                <h2>{`${project.projectName} Contributions`}</h2>
+                <table
+                  style={{
+                    border: "2px solid forestgreen",
+                    width: "400px",
+                    height: "200px",
+                  }}
+                >
+                  <thead>
+                    <tr>
+                      <th style={{ borderBottom: "1px solid black" }}>Month</th>
+                      <th style={{ borderBottom: "1px solid black" }}>Total</th>
+                    </tr>
+                  </thead>
+                  {project?.contributions.map(
+                    (val: MonthlyContrib, key: number) => {
+                      return (
+                        <tbody key={key}>
+                          <tr>
+                            <td style={{ textAlign: "center" }}>{val.month}</td>
+                            <td
+                              style={{ textAlign: "center" }}
+                            >{`$${val.total}`}</td>
+                          </tr>
+                        </tbody>
+                      );
+                    }
+                  )}
+                </table>
+              </div>
+            );
+          }
+        )}
       </div>
 
       {/* below is for charts, only above table needs to have getAllApprovedContribByOrg removed... */}
