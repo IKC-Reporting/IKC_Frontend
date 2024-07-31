@@ -51,7 +51,7 @@ const MyContributions = () => {
           <a href="/org_options">Organization Options</a>
         </p>
       </div>
-      <h1>My Contributions</h1>
+      <h1>`${data?.getAllApprovedContribByOrg?.projectName} Contributions`</h1>
       <div>
         <table
           style={{
