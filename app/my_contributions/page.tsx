@@ -26,8 +26,8 @@ const GET_CONTRIBUTIONS_FOR_USER = gql`
 `;
 
 export default function MyContributions() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [contributorId, setContributorId] = useState<string | null>(null);
+  const userId = localStorage.getItem("userId");
+  const contributorId = localStorage.getItem("contributorId");
   const [contributionData, setContributionData] = useState<Contribution[]>([]);
 
   const { loading, error, data } = useQuery(GET_CONTRIBUTIONS_FOR_USER, {
@@ -36,33 +36,11 @@ export default function MyContributions() {
   });
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId");
-    if (storedUserId) {
-      setUserId(storedUserId);
-    } else {
-      console.error("No user ID found in localStorage");
-      // Redirect or handle the missing user ID case appropriately
-    }
-    if (storedContributorId) {
-      setUserId(storedContributorId);
-    } else {
-      console.error("No contributor ID found in localStorage");
-      // Redirect or handle the missing user ID case appropriately
-    }
-
     const tempData = data?.getAllContributionsForContributor
       ? data.getAllContributionsForContributor
       : null;
     setContributionData(tempData);
   }, [data?.getAllContributionsForContributor]);
-
-  const printLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    const data = keys
-      .map((key) => `${key}: ${localStorage.getItem(key)}`)
-      .join(", ");
-    return data;
-  };
 
   if (loading) return <p>Loading...</p>;
   if (error) {
@@ -148,10 +126,9 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.hourContribution?.hourlyRate *
+                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate *
                           val?.hourContribution?.hours
-                        }`}</td>
+                          }`}</td>
                       </>
                     )}
                     {!!val.otherContribution && (
@@ -165,10 +142,9 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${
-                          val?.otherContribution?.value *
+                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value *
                           val?.otherContribution?.items
-                        }`}</td>
+                          }`}</td>
                       </>
                     )}
                   </tr>
