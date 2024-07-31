@@ -15,11 +15,7 @@ const Submit_Contribution = () => {
   }, []);
 
   const handleNavigation = (url: string) => {
-    if (projectId) {
-      window.location.href = `${url}?projectId=${projectId}`;
-    } else {
-      window.location.href = url;
-    }
+    window.location.href = url;
   };
 
   return (
