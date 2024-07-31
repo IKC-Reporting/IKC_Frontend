@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { gql, useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
@@ -40,17 +40,19 @@ const Submissions = () => {
   const [getAllIkcByPartnerOrgId, setOrgId] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedOrgId = localStorage.getItem("getAllIkcByPartnerOrgId");
-    console.log("Retrieved getAllIkcByPartnerOrgId:", storedOrgId); // Debugging log
+    const storedOrgId = localStorage.getItem("orgId");
+    console.log("Retrieved orgId from localStorage:", storedOrgId); // Check what’s being retrieved
+
     if (storedOrgId) {
       setOrgId(storedOrgId);
     } else {
+      console.warn("orgId not found in localStorage. Redirecting...");
       window.location.href = "/select_organization"; // Redirect if orgId is not found
     }
   }, []);
 
   const { loading, error, data } = useQuery(GET_IKC_REPORTS_FOR_ORG, {
-    variables: { partnerOrgId: getAllIkcByPartnerOrgId },
+    variables: { getAllIkcByPartnerOrgId },
     skip: !getAllIkcByPartnerOrgId,
   });
 
@@ -66,70 +68,58 @@ const Submissions = () => {
     return <p>Error: {error.message}</p>;
   }
 
-  const ikcReport: IKCReport = data?.ikcReport;
+  const ikcReports: IKCReport[] = data?.getAllIKCByPartnerOrg || [];
 
   return (
     <div>
-      <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/org_options">Organization Options</a></p>
+      <p>
+        <a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/org_options">Organization Options</a>
+      </p>
       <h1>Submissions Page</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Report ID</th>
-            <th>Partner Org ID</th>
-            <th>Report Start Date</th>
-            <th>Report End Date</th>
-            <th>Submitter ID</th>
-            <th>Approval Status</th>
-            <th>Approver ID</th>
-            <th>Approval Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{ikcReport.id}</td>
-            <td>{ikcReport.partnerOrgId}</td>
-            <td>{ikcReport.reportStartDate}</td>
-            <td>{ikcReport.submitterId}</td>
-            <td>{ikcReport.isApproved ? "Approved" : "Not Approved"}</td>
-            <td>{ikcReport.approverId}</td>
-            <td>{ikcReport.approvalDate}</td>
-          </tr>
-        </tbody>
-      </table>
-      <h2>Contributions</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Contribution ID</th>
-            <th>Contributor ID</th>
-            <th>Date</th>
-            <th>Details</th>
-            <th>Hours</th>
-            <th>Hourly Rate</th>
-            <th>Benefit Rate</th>
-            <th>Item Name</th>
-            <th>Item Value</th>
-            <th>Items</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ikcReport.contributions.map((contribution) => (
-            <tr key={contribution.id}>
-              <td>{contribution.id}</td>
-              <td>{contribution.contributorId}</td>
-              <td>{contribution.date}</td>
-              <td>{contribution.details}</td>
-              <td>{contribution.hourContribution?.hours}</td>
-              <td>{contribution.hourContribution?.hourlyRate}</td>
-              <td>{contribution.hourContribution?.benRatePer}</td>
-              <td>{contribution.otherContribution?.itemName}</td>
-              <td>{contribution.otherContribution?.value}</td>
-              <td>{contribution.otherContribution?.items}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+
+      {ikcReports.length === 0 ? (
+        <p>No reports found.</p>
+      ) : (
+        <>
+          <h2>Reports</h2>
+          <ul>
+            {ikcReports.map((ikcReport) => (
+              <li key={ikcReport.id}>
+                <h3>Report ID: {ikcReport.id}</h3>
+                <ul>
+                  <li><strong>Partner Org ID:</strong> {ikcReport.partnerOrgId}</li>
+                  <li><strong>Report Start Date:</strong> {ikcReport.reportStartDate}</li>
+                  <li><strong>Submitter ID:</strong> {ikcReport.submitterId}</li>
+                  <li><strong>Approval Status:</strong> {ikcReport.isApproved ? "Approved" : "Not Approved"}</li>
+                  <li><strong>Approver ID:</strong> {ikcReport.approverId}</li>
+                  <li><strong>Approval Date:</strong> {ikcReport.approvalDate}</li>
+                </ul>
+
+                <h4>Contributions</h4>
+                <ul>
+                  {ikcReport.contributions.map((contribution) => (
+                    <li key={contribution.id}>
+                      <h5>Contribution ID: {contribution.id}</h5>
+                      <ul>
+                        <li><strong>Contributor ID:</strong> {contribution.contributorId}</li>
+                        <li><strong>Date:</strong> {contribution.date}</li>
+                        <li><strong>Details:</strong> {contribution.details}</li>
+                        <li><strong>Hours:</strong> {contribution.hourContribution?.hours}</li>
+                        <li><strong>Hourly Rate:</strong> {contribution.hourContribution?.hourlyRate}</li>
+                        <li><strong>Benefit Rate:</strong> {contribution.hourContribution?.benRatePer}</li>
+                        <li><strong>Item Name:</strong> {contribution.otherContribution?.itemName}</li>
+                        <li><strong>Item Value:</strong> {contribution.otherContribution?.value}</li>
+                        <li><strong>Items:</strong> {contribution.otherContribution?.items}</li>
+                      </ul>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
       <div className="localStorageData">
         <h2>LocalStorage Data:</h2>
         <p>{printLocalStorage()}</p>
