@@ -3,10 +3,8 @@ import { useEffect, useState } from "react";
 
 const Project_Options = () => {
   const [projectId, setProjectId] = useState<string | null>(null);
-
   useEffect(() => {
     const storedProjectId = localStorage.getItem("projectId");
-    console.log("Retrieved projectId:", storedProjectId); // Debugging log
     if (storedProjectId) {
       setProjectId(storedProjectId);
     } else {
@@ -16,38 +14,39 @@ const Project_Options = () => {
   }, []);
 
   const handleNavigation = (url: string) => {
-    if (projectId) {
-      window.location.href = `${url}?projectId=${projectId}`;
-    } else {
-      window.location.href = url;
-    }
-  };
-
-  const printLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
-    return data;
+    window.location.href = url;
   };
 
   return (
     <div>
       <div>
-        <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/project_home">Project Home</a></p>
+        <p>
+          <a href="/org">Organizations</a> {"<"}{" "}
+          <a href="/org_home">Organization Home</a> {"<"}{" "}
+          <a href="/project_home">Project Home</a>
+        </p>
       </div>
       <div className="container">
         <h1>Project Options</h1>
         <p>Current Project ID: {projectId}</p>
-        <button className="button" onClick={() => handleNavigation("/add_contribution")}>Add A Contribution</button>
-        <br/><br/>
-        <button className="button" onClick={() => handleNavigation("/my_contributions")}>View Your Contributions</button>
-        <br/>
-      </div>
-      <div className="localStorageData">
-        <h2>LocalStorage Data:</h2>
-        <p>{printLocalStorage()}</p>
+        <button
+          className="button"
+          onClick={() => handleNavigation("/add_contribution")}
+        >
+          Add A Contribution
+        </button>
+        <br />
+        <br />
+        <button
+          className="button"
+          onClick={() => handleNavigation("/my_contributions")}
+        >
+          View Your Contributions
+        </button>
+        <br />
       </div>
     </div>
   );
-}
+};
 
 export default Project_Options;

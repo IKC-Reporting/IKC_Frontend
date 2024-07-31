@@ -1,7 +1,12 @@
 "use client";
 
-import { gql, useQuery } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
+import { gql, useQuery } from "@apollo/client";
+import React, { useEffect } from "react";
+import {
+  Contributor,
+  PartnerOrgItem,
+  ResearchProject,
+} from "../../utils/graphql";
 
 export const GET_ALL_PROJ_FOR_ORGS = gql`
   query getAllProjForOrgs($orgId: ID!) {
@@ -55,35 +60,37 @@ export const GET_ALL_PROJ_FOR_ORGS = gql`
 `;
 
 const Project_Home = () => {
-  const [orgId, setOrgId] = useState<string | null>(null);
-
+  const orgId = localStorage.getItem("orgId");
+  const userId = localStorage.getItem("userId");
   useEffect(() => {
-    const storedOrgId = localStorage.getItem("orgId");
-    console.log("Retrieved orgId:", storedOrgId); // Debugging log
-    if (storedOrgId) {
-      setOrgId(storedOrgId);
-    } else {
+    if (!orgId) {
       window.location.href = "/select_organization"; // Redirect if orgId is not found
     }
-
     // Clear the projectId from local storage when component mounts
     localStorage.removeItem("projectId");
   }, []);
 
   const { loading, error, data } = useQuery(GET_ALL_PROJ_FOR_ORGS, {
     variables: { orgId },
-    skip: !orgId,  // Skip query if orgId is not yet set
+    skip: !orgId, // Skip query if orgId is not yet set
   });
 
-  const handleProjectSelect = (projectId: string) => {
-    localStorage.setItem("projectId", projectId);
-    window.location.href = `/project_options?projectId=${projectId}`;
-  };
+  const handleProjectSelect = (
+    projectId: string,
+    projectPartners: PartnerOrgItem[]
+  ) => {
+    const partnerOrg = projectPartners.find(
+      (project: PartnerOrgItem) => project.id === orgId
+    );
 
-  const printLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
-    return data;
+    const contributor = partnerOrg?.contributors.find(
+      (contributor: Contributor) => contributor.userId === userId
+    );
+
+    const constributorId = contributor?.id ? contributor?.id : "";
+    localStorage.setItem("contributorId", constributorId);
+    localStorage.setItem("projectId", projectId);
+    window.location.href = `/project_options`;
   };
 
   if (loading) return <p>Loading...</p>;
@@ -94,23 +101,37 @@ const Project_Home = () => {
 
   return (
     <div>
-      <p><a href="/org_home">Organization Home</a></p>
+      <p>
+        <a href="/org_home">Organization Home</a>
+      </p>
       <div className="container">
-        <p>Projects for {data?.getAllProjForOrgs?.[0]?.projectPartners?.[0]?.name}</p>
-        {data?.getAllProjForOrgs?.map((project: { id: string; projectTitle: string; startDate: string; endDate: string; }) => (
+        <p>
+          Projects for{" "}
+          {data?.getAllProjForOrgs?.[0]?.projectPartners?.[0]?.name}
+        </p>
+        {data?.getAllProjForOrgs?.map((project: ResearchProject) => (
           <div key={project.id}>
             <h3>{project.projectTitle}</h3>
             <p>Start Date: {new Date(project.startDate).toDateString()}</p>
             <p>End Date: {new Date(project.endDate).toDateString()}</p>
-            <button className="button" onClick={() => handleProjectSelect(project.id)}>View Project</button>
-            <br /><br />
+            <button
+              className="button"
+              onClick={() => {
+                handleProjectSelect(project.id, project?.projectPartners);
+              }}
+            >
+              View Project
+            </button>
+            <br />
+            <br />
           </div>
         ))}
-        <button className="buttonback" onClick={() => window.location.href = "/org_home"}>Back to Organization Home</button>
-      </div>
-      <div className="localStorageData">
-        <h2>LocalStorage Data:</h2>
-        <p>{printLocalStorage()}</p>
+        <button
+          className="buttonback"
+          onClick={() => (window.location.href = "/org_home")}
+        >
+          Back to Organization Home
+        </button>
       </div>
     </div>
   );

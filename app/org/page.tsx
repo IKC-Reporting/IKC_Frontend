@@ -33,12 +33,6 @@ const SelectOrganization = () => {
     variables: { userId },
   });
 
-  const printLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
-    return data;
-  };
-
   if (loading) return <p>Loading...</p>;
   if (error) {
     console.error(error);
@@ -62,10 +56,6 @@ const SelectOrganization = () => {
           {partnerOrg.name}
         </button>
       ))}
-      <div className="localStorageData">
-        <h2>LocalStorage Data:</h2>
-        <p>{printLocalStorage()}</p>
-      </div>
     </div>
   );
 };

@@ -1,16 +1,8 @@
 "use client";
 import { gql, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
-import Layout from "../components/Layout";
 import { Contribution, ProjContrib, MonthlyContrib } from "../../utils/graphql";
-import {
-  BarChart,
-  Bar,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis } from "recharts";
 
 const GET_ALL_APPROVED_CONTRIB_BY_ORG = gql`
   query GetAllApprovedContribByOrg($orgId: ID!) {
@@ -30,7 +22,6 @@ const MyContributions = () => {
 
   useEffect(() => {
     const storedOrgId = localStorage.getItem("orgId");
-    console.log("Retrieved orgId:", storedOrgId); // Debugging log
     if (storedOrgId) {
       setOrgId(storedOrgId);
     } else {
@@ -44,24 +35,12 @@ const MyContributions = () => {
     skip: !orgId, // Skip the query if orgId is not set
   });
 
-  const printLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    const data = keys
-      .map((key) => `${key}: ${localStorage.getItem(key)}`)
-      .join(", ");
-    return data;
-  };
-
   useEffect(() => {
-    console.log("LocalStorage Data:", printLocalStorage());
-
     const tempData = data?.getAllApprovedContribByOrg
       ? data?.getAllApprovedContribByOrg
       : [];
     setProjectChartData(tempData);
   }, [data?.getAllApprovedContribByOrg]);
-
-  console.log(data?.getAllApprovedContribByOrg);
 
   return (
     <div>
@@ -159,11 +138,6 @@ const MyContributions = () => {
             </div>
           );
         })}
-      </div>
-
-      <div className="localStorageData">
-        <h2>LocalStorage Data:</h2>
-        <p>{printLocalStorage()}</p>
       </div>
     </div>
   );

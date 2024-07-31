@@ -1,7 +1,8 @@
 "use client";
+"use client";
 
-import { gql, useQuery } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
+import { gql, useQuery } from "@apollo/client";
+import React, { useEffect, useState } from "react";
 import { IKCReport } from "../../utils/graphql";
 
 export const GET_IKC_REPORTS_FOR_ORG = gql`
@@ -37,28 +38,16 @@ export const GET_IKC_REPORTS_FOR_ORG = gql`
 `;
 
 const Submissions = () => {
-  const [getAllIkcByPartnerOrgId, setOrgId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const storedOrgId = localStorage.getItem("orgId");
-    console.log("Retrieved orgId from localStorage:", storedOrgId); // Check what’s being retrieved
-
-    if (storedOrgId) {
-      setOrgId(storedOrgId);
-    } else {
-      console.warn("orgId not found in localStorage. Redirecting...");
-      window.location.href = "/select_organization"; // Redirect if orgId is not found
-    }
-  }, []);
-
+  const partnerOrg = localStorage.getItem("orgId");
   const { loading, error, data } = useQuery(GET_IKC_REPORTS_FOR_ORG, {
-    variables: { getAllIkcByPartnerOrgId },
-    skip: !getAllIkcByPartnerOrgId,
+    variables: { partnerOrgId: partnerOrg },
   });
 
   const printLocalStorage = () => {
     const keys = Object.keys(localStorage);
-    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
+    const data = keys
+      .map((key) => `${key}: ${localStorage.getItem(key)}`)
+      .join(", ");
     return data;
   };
 
@@ -73,7 +62,9 @@ const Submissions = () => {
   return (
     <div>
       <p>
-        <a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/org_options">Organization Options</a>
+        <a href="/org">Organizations</a> {"<"}{" "}
+        <a href="/org_home">Organization Home</a> {"<"}{" "}
+        <a href="/org_options">Organization Options</a>
       </p>
       <h1>Submissions Page</h1>
 
@@ -87,12 +78,26 @@ const Submissions = () => {
               <li key={ikcReport.id}>
                 <h3>Report ID: {ikcReport.id}</h3>
                 <ul>
-                  <li><strong>Partner Org ID:</strong> {ikcReport.partnerOrgId}</li>
-                  <li><strong>Report Start Date:</strong> {ikcReport.reportStartDate}</li>
-                  <li><strong>Submitter ID:</strong> {ikcReport.submitterId}</li>
-                  <li><strong>Approval Status:</strong> {ikcReport.isApproved ? "Approved" : "Not Approved"}</li>
-                  <li><strong>Approver ID:</strong> {ikcReport.approverId}</li>
-                  <li><strong>Approval Date:</strong> {ikcReport.approvalDate}</li>
+                  <li>
+                    <strong>Partner Org ID:</strong> {ikcReport.partnerOrgId}
+                  </li>
+                  <li>
+                    <strong>Report Start Date:</strong>{" "}
+                    {ikcReport.reportStartDate}
+                  </li>
+                  <li>
+                    <strong>Submitter ID:</strong> {ikcReport.submitterId}
+                  </li>
+                  <li>
+                    <strong>Approval Status:</strong>{" "}
+                    {ikcReport.isApproved ? "Approved" : "Not Approved"}
+                  </li>
+                  <li>
+                    <strong>Approver ID:</strong> {ikcReport.approverId}
+                  </li>
+                  <li>
+                    <strong>Approval Date:</strong> {ikcReport.approvalDate}
+                  </li>
                 </ul>
 
                 <h4>Contributions</h4>
@@ -101,15 +106,40 @@ const Submissions = () => {
                     <li key={contribution.id}>
                       <h5>Contribution ID: {contribution.id}</h5>
                       <ul>
-                        <li><strong>Contributor ID:</strong> {contribution.contributorId}</li>
-                        <li><strong>Date:</strong> {contribution.date}</li>
-                        <li><strong>Details:</strong> {contribution.details}</li>
-                        <li><strong>Hours:</strong> {contribution.hourContribution?.hours}</li>
-                        <li><strong>Hourly Rate:</strong> {contribution.hourContribution?.hourlyRate}</li>
-                        <li><strong>Benefit Rate:</strong> {contribution.hourContribution?.benRatePer}</li>
-                        <li><strong>Item Name:</strong> {contribution.otherContribution?.itemName}</li>
-                        <li><strong>Item Value:</strong> {contribution.otherContribution?.value}</li>
-                        <li><strong>Items:</strong> {contribution.otherContribution?.items}</li>
+                        <li>
+                          <strong>Contributor ID:</strong>{" "}
+                          {contribution.contributorId}
+                        </li>
+                        <li>
+                          <strong>Date:</strong> {contribution.date}
+                        </li>
+                        <li>
+                          <strong>Details:</strong> {contribution.details}
+                        </li>
+                        <li>
+                          <strong>Hours:</strong>{" "}
+                          {contribution.hourContribution?.hours}
+                        </li>
+                        <li>
+                          <strong>Hourly Rate:</strong>{" "}
+                          {contribution.hourContribution?.hourlyRate}
+                        </li>
+                        <li>
+                          <strong>Benefit Rate:</strong>{" "}
+                          {contribution.hourContribution?.benRatePer}
+                        </li>
+                        <li>
+                          <strong>Item Name:</strong>{" "}
+                          {contribution.otherContribution?.itemName}
+                        </li>
+                        <li>
+                          <strong>Item Value:</strong>{" "}
+                          {contribution.otherContribution?.value}
+                        </li>
+                        <li>
+                          <strong>Items:</strong>{" "}
+                          {contribution.otherContribution?.items}
+                        </li>
                       </ul>
                     </li>
                   ))}

@@ -1,7 +1,7 @@
 "use client";
 
-import { gql, useQuery } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
+import { gql, useQuery } from "@apollo/client";
+import React, { useEffect, useState } from "react";
 
 export const GET_PARTNER_ORG = gql`
   query partnerOrg($id: ID!) {
@@ -26,7 +26,6 @@ const Org_Home = () => {
 
   useEffect(() => {
     const storedOrgId = localStorage.getItem("orgId");
-    console.log("Retrieved orgId:", storedOrgId); // Debugging log
     if (storedOrgId) {
       setOrgId(storedOrgId);
     } else {
@@ -36,14 +35,8 @@ const Org_Home = () => {
 
   const { loading, error, data } = useQuery(GET_PARTNER_ORG, {
     variables: { id: orgId },
-    skip: !orgId,  // Skip query if orgId is not yet set
+    skip: !orgId, // Skip query if orgId is not yet set
   });
-
-  const printLocalStorage = () => {
-    const keys = Object.keys(localStorage);
-    const data = keys.map(key => `${key}: ${localStorage.getItem(key)}`).join(", ");
-    return data;
-  };
 
   if (loading) return <p>Loading...</p>;
   if (error) {
@@ -53,18 +46,31 @@ const Org_Home = () => {
 
   return (
     <div>
-      <p><a href="/select_organization">Organizations</a></p>
+      <p>
+        <a href="/select_organization">Organizations</a>
+      </p>
       <div className="container">
         <p>{data?.partnerOrg?.name} Home</p>
-        <button className="button" onClick={() => window.location.href = "/org_options"}>Organization Options</button>
+        <button
+          className="button"
+          onClick={() => (window.location.href = "/org_options")}
+        >
+          Organization Options
+        </button>
         <br />
-        <button className="button" onClick={() => window.location.href = "/project_home"}>View all Projects</button>
+        <button
+          className="button"
+          onClick={() => (window.location.href = "/project_home")}
+        >
+          View all Projects
+        </button>
         <br />
-        <button className="buttonback" onClick={() => window.location.href = "/org"}>View All Organizations</button>
-      </div>
-      <div className="localStorageData">
-        <h2>LocalStorage Data:</h2>
-        <p>{printLocalStorage()}</p>
+        <button
+          className="buttonback"
+          onClick={() => (window.location.href = "/org")}
+        >
+          View All Organizations
+        </button>
       </div>
     </div>
   );

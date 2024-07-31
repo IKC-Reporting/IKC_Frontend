@@ -37,9 +37,6 @@ export default function MyContributions() {
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
-    const storedContributorId = localStorage.getItem("contributorId")
-    console.log("Retrieved userId:", storedUserId); // Debugging log
-    console.log("Retrieved userId:", storedContributorId); // Debugging log
     if (storedUserId) {
       setUserId(storedUserId);
     } else {
@@ -151,9 +148,10 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.hourContribution?.hourlyRate}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.hourContribution?.hourlyRate *
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.hourContribution?.hourlyRate *
                           val?.hourContribution?.hours
-                          }`}</td>
+                        }`}</td>
                       </>
                     )}
                     {!!val.otherContribution && (
@@ -167,9 +165,10 @@ export default function MyContributions() {
                         <td
                           style={{ textAlign: "center" }}
                         >{`${val?.otherContribution?.value}`}</td>
-                        <td style={{ textAlign: "center" }}>{`${val?.otherContribution?.value *
+                        <td style={{ textAlign: "center" }}>{`${
+                          val?.otherContribution?.value *
                           val?.otherContribution?.items
-                          }`}</td>
+                        }`}</td>
                       </>
                     )}
                   </tr>
@@ -189,11 +188,6 @@ export default function MyContributions() {
           <Line type="monotone" stroke="#82ca9d" dataKey="otherValue" />
           <Legend />
         </LineChart>
-      </div>
-
-      <div className="localStorageData">
-        <h2>LocalStorage Data:</h2>
-        <p>{printLocalStorage()}</p>
       </div>
     </div>
   );
