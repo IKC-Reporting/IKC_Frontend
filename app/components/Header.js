@@ -1,9 +1,9 @@
 import React from 'react';
-import Link from '../../node_modules/next/link';
+import Link from 'next/link';
 
 const Header = () => (
     <header style={headerStyle}>
-        <Link href={"/org"}>org home</Link>
+        <Link href="/org">org home</Link>
     </header>
 );
 

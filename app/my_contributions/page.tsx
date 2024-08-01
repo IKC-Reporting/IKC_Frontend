@@ -1,42 +1,156 @@
 "use client";
-import React from 'react'
 
-const fakeContributions = [
-  {name: "service1", hours: "1.5", cost: "0", type: "service"},
-  {name: "item1", hours: "0", cost: "2500", type: "item"},
-  {name: "service2", hours: "2.0", cost: "0", type: "service"}
-]
+import React from 'react';
+import { gql, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { Contribution } from "../../utils/graphql";
+import { Legend, Line, LineChart, XAxis, YAxis } from "recharts";
 
-const my_contributions = () => {
+const GET_CONTRIBUTIONS_FOR_USER = gql`
+  query GetAllContributionsForContributor($contributorId: ID!) {
+    getAllContributionsForContributor(contributorId: $contributorId) {
+      id
+      contributorId
+      date
+      details
+      hourContribution {
+        hours
+        hourlyRate
+        benRatePer
+      }
+      otherContribution {
+        itemName
+        value
+        items
+      }
+    }
+  }
+`;
+
+export default function MyContributions() {
+  const userId = localStorage.getItem("userId");
+  const contributorId = localStorage.getItem("contributorId");
+  const [contributionData, setContributionData] = useState<Contribution[]>([]);
+
+  const { loading, error, data } = useQuery(GET_CONTRIBUTIONS_FOR_USER, {
+    variables: { contributorId },
+    skip: !userId, // Skip query if userId is not yet set
+  });
+
+  useEffect(() => {
+    if (data?.getAllContributionsForContributor) {
+      console.log('Fetched data:', data.getAllContributionsForContributor); // Log data
+      setContributionData(data.getAllContributionsForContributor);
+    }
+  }, [data]);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) {
+    console.error(error);
+    return <p>Error: {error.message}</p>;
+  }
+
+  const formattedContributions = contributionData
+    .slice() // Create a copy of the array to avoid mutating the original data
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((contribution) => {
+      let hourlyValue = 0;
+      let otherValue = 0;
+      if (contribution.hourContribution) {
+        hourlyValue =
+          contribution.hourContribution.hourlyRate *
+          contribution.hourContribution.hours;
+      } else if (contribution.otherContribution) {
+        otherValue =
+          contribution.otherContribution.value *
+          contribution.otherContribution.items;
+      }
+      return {
+        date: new Date(contribution.date).toLocaleString("default", {
+          month: "short",
+          year: "2-digit",
+        }),
+        hourlyValue,
+        otherValue,
+      };
+    });
+
   return (
     <div>
       <div>
-        <p><a href="/org">Organizations</a> {"<"} <a href="/org_home">Organization Home</a> {"<"} <a href="/project_home">Project Home</a> {"<"} <a href="/project_options">Project Options</a></p>
+        <p>
+          <a href="/org">Organizations</a> {"<"}{" "}
+          <a href="/org_home">Organization Home</a> {"<"}{" "}
+          <a href="/project_home">Project Home</a> {"<"}{" "}
+          <a href="/project_options">Project Options</a>
+        </p>
       </div>
       <h1>My Contributions</h1>
       <div>
-        <table style={{border: "2px solid forestgreen", width: "800px", height: "200px"}}>
-          <tr>
-            <th style={{borderBottom: "1px solid black"}}>Name</th>
-            <th style={{borderBottom: "1px solid black"}}>Hours</th>
-            <th style={{borderBottom: "1px solid black"}}>Cost</th>
-            <th style={{borderBottom: "1px solid black"}}>Type</th>
-          </tr>
-          {fakeContributions.map((val, key)=>{
-            return (
-              <tr key={key}>
-                <td style={{textAlign: "center"}}>{val.name}</td>
-                <td style={{textAlign: "center"}}>{val.hours}</td>
-                <td style={{textAlign: "center"}}>{val.cost}</td>
-                <td style={{textAlign: "center"}}>{val.type}</td>
-              </tr>
-            )
-          })}
+        <p style={{ fontStyle: 'italic', color: 'gray' }}>
+          Note: May include non-approved items.
+        </p>
+        <table
+          style={{
+            border: "2px solid forestgreen",
+            width: "800px",
+            height: "auto",
+          }}
+        >
+          <thead>
+            <tr>
+              <th style={{ borderBottom: "1px solid black" }}>
+                Contribution ID
+              </th>
+              <th style={{ borderBottom: "1px solid black" }}>Date</th>
+              <th style={{ borderBottom: "1px solid black" }}>Details</th>
+              <th style={{ borderBottom: "1px solid black" }}>Type</th>
+              <th style={{ borderBottom: "1px solid black" }}>Hours/Items</th>
+              <th style={{ borderBottom: "1px solid black" }}>Value Per</th>
+              <th style={{ borderBottom: "1px solid black" }}>Total Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contributionData.map((val: Contribution, key: number) => {
+              const date = new Date(val.date).toDateString();
+              return (
+                <tr key={key}>
+                  <td style={{ textAlign: "center" }}>{val.id}</td>
+                  <td style={{ textAlign: "center" }}>{date}</td>
+                  <td style={{ textAlign: "center" }}>{val.details}</td>
+                  {val.hourContribution && (
+                    <>
+                      <td style={{ textAlign: "center" }}>Hourly</td>
+                      <td style={{ textAlign: "center" }}>{val.hourContribution.hours}</td>
+                      <td style={{ textAlign: "center" }}>{val.hourContribution.hourlyRate}</td>
+                      <td style={{ textAlign: "center" }}>{val.hourContribution.hourlyRate * val.hourContribution.hours}</td>
+                    </>
+                  )}
+                  {val.otherContribution && (
+                    <>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.itemName}</td>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.items}</td>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.value}</td>
+                      <td style={{ textAlign: "center" }}>{val.otherContribution.value * val.otherContribution.items}</td>
+                    </>
+                  )}
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
+      {/* Line Chart */}
+      <div>
+        <h2 style={{ textAlign: "center" }}>All Contributions</h2>
+        <LineChart width={600} height={600} data={formattedContributions}>
+          <XAxis dataKey="date" />
+          <YAxis tickFormatter={(v) => `$${v}`} />
+          <Line type="monotone" stroke="#8884d8" dataKey="hourlyValue" />
+          <Line type="monotone" stroke="#82ca9d" dataKey="otherValue" />
+          <Legend />
+        </LineChart>
+      </div>
     </div>
-  )
+  );
 }
-
-
-export default my_contributions

@@ -15,7 +15,9 @@
     "graphql": "^16.9.0",
     "next": "^14.2.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "recharts": "^2.12.7",
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@testing-library/react": "^14.2.1",

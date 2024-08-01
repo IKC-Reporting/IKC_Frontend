@@ -1,19 +1,27 @@
-import React from 'react';
-import Header from './Header';
-import Footer from './Footer';
+import React from "react";
+import Header from "./Header";
+import Footer from "./Footer";
 
 const Layout = ({ children }) => (
-    <div>
-        <Header />
-        <div style={contentStyle}>
-            {children}
-        </div>
-        <Footer />
+  <div style={layoutStyle}>
+    <Header />
+    <div className="wrapper">
+      <main style={contentStyle}>{children}</main>
     </div>
+    <Footer />
+  </div>
 );
 
+const layoutStyle = {
+  display: "flex",
+  flexDirection: "column",
+  minHeight: "100vh",
+};
+
 const contentStyle = {
-    padding: '20px'
+  flex: 1,
+  padding: "20px",
+  overflowY: "auto",
 };
 
 export default Layout;
