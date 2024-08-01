@@ -8,7 +8,6 @@ const footerStyle = {
   backgroundColor: "#e0e0e0",
   padding: "10px",
   textAlign: "center",
-  bottom: "0",
   width: "100%",
 };
 
