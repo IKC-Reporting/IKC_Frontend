@@ -5,7 +5,9 @@ import Footer from "./Footer";
 const Layout = ({ children }) => (
   <div style={layoutStyle}>
     <Header />
-    <main style={contentStyle}>{children}</main>
+    <div className="wrapper">
+      <main style={contentStyle}>{children}</main>
+    </div>
     <Footer />
   </div>
 );
@@ -14,13 +16,12 @@ const layoutStyle = {
   display: "flex",
   flexDirection: "column",
   minHeight: "100vh",
-  overflow: "hidden",
 };
 
 const contentStyle = {
-  flex: "1",
-  overflowY: "auto", 
+  flex: 1,
   padding: "20px",
+  overflowY: "auto",
 };
 
 export default Layout;
